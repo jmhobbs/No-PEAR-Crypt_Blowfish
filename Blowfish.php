@@ -200,7 +200,7 @@ class Crypt_Blowfish
     function encrypt($plainText)
     {
         if (!is_string($plainText)) {
-            throw Exception( 'Plain text must be a string' );
+            throw new Exception( 'Plain text must be a string' );
         }
 
         if (extension_loaded('mcrypt')) {
@@ -229,7 +229,7 @@ class Crypt_Blowfish
     function decrypt($cipherText)
     {
         if (!is_string($cipherText)) {
-            throw Exception( 'Chiper text must be a string' );
+            throw new Exception( 'Chiper text must be a string' );
         }
 
         if (extension_loaded('mcrypt')) {
@@ -260,13 +260,13 @@ class Crypt_Blowfish
     function setKey($key)
     {
         if (!is_string($key)) {
-            throw Exception( 'Key must be a string' );
+            throw new Exception( 'Key must be a string' );
         }
 
         $len = strlen($key);
 
         if ($len > 56 || $len == 0) {
-            throw Exception( 'Key must be less than 56 characters and non-zero. Supplied key length: ' . $len );
+            throw new Exception( 'Key must be less than 56 characters and non-zero. Supplied key length: ' . $len );
         }
 
         if (extension_loaded('mcrypt')) {
