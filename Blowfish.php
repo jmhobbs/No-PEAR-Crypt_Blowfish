@@ -1,6 +1,17 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
+/*
+	This is a lightly modified version of Crypt_Blowfish 1.0.1 to remove the PEAR
+	dependency.
+
+	You can find that here:
+	http://pear.php.net/package/Crypt_Blowfish/download/1.0.1
+
+	You can find this version here:
+	http://github.com/jmhobbs/No-PEAR-Crypt_Blowfish
+*/
+
 /**
  * Crypt_Blowfish allows for encryption and decryption on the fly using
  * the Blowfish algorithm. Crypt_Blowfish does not require the mcrypt
@@ -24,9 +35,6 @@
  * @version    CVS: $Id: Blowfish.php,v 1.81 2005/05/30 18:40:36 mfonda Exp $
  * @link       http://pear.php.net/package/Crypt_Blowfish
  */
-
-
-require_once 'PEAR.php';
 
 
 /**
@@ -56,8 +64,8 @@ class Crypt_Blowfish
      * @access private
      */
     var $_P = array();
-    
-    
+
+
     /**
      * Array of four S-Blocks each containing 256 32-bit entries
      *
@@ -82,7 +90,7 @@ class Crypt_Blowfish
      */
     var $_iv = null;
 
-    
+
     /**
      * Crypt_Blowfish Constructor
      * Initializes the Crypt_Blowfish object, and gives a sets
@@ -99,7 +107,7 @@ class Crypt_Blowfish
         }
         $this->setKey($key);
     }
-    
+
     /**
      * Deprecated isReady method
      *
@@ -111,7 +119,7 @@ class Crypt_Blowfish
     {
         return true;
     }
-    
+
     /**
      * Deprecated init method - init is now a private
      * method and has been replaced with _init
@@ -125,7 +133,7 @@ class Crypt_Blowfish
     {
         $this->_init();
     }
-    
+
     /**
      * Initializes the Crypt_Blowfish object
      *
@@ -137,7 +145,7 @@ class Crypt_Blowfish
         $this->_P = $defaults->P;
         $this->_S = $defaults->S;
     }
-            
+
     /**
      * Enciphers a single 64 bit block
      *
@@ -158,8 +166,8 @@ class Crypt_Blowfish
         $Xr = $Xl ^ $this->_P[16];
         $Xl = $temp ^ $this->_P[17];
     }
-    
-    
+
+
     /**
      * Deciphers a single 64 bit block
      *
@@ -180,19 +188,19 @@ class Crypt_Blowfish
         $Xr = $Xl ^ $this->_P[1];
         $Xl = $temp ^ $this->_P[0];
     }
-    
-    
+
+
     /**
      * Encrypts a string
      *
      * @param string $plainText
-     * @return string Returns cipher text on success, PEAR_Error on failure
+     * @return string Returns cipher text on success, throws an exception on failure
      * @access public
      */
     function encrypt($plainText)
     {
         if (!is_string($plainText)) {
-            PEAR::raiseError('Plain text must be a string', 0, PEAR_ERROR_DIE);
+            throw Exception( 'Plain text must be a string' );
         }
 
         if (extension_loaded('mcrypt')) {
@@ -209,19 +217,19 @@ class Crypt_Blowfish
         }
         return $cipherText;
     }
-    
-    
+
+
     /**
      * Decrypts an encrypted string
      *
      * @param string $cipherText
-     * @return string Returns plain text on success, PEAR_Error on failure
+     * @return string Returns plain text on success, throws and Exception on failure
      * @access public
      */
     function decrypt($cipherText)
     {
         if (!is_string($cipherText)) {
-            PEAR::raiseError('Chiper text must be a string', 1, PEAR_ERROR_DIE);
+            throw Exception( 'Chiper text must be a string' );
         }
 
         if (extension_loaded('mcrypt')) {
@@ -238,27 +246,27 @@ class Crypt_Blowfish
         }
         return $plainText;
     }
-    
-    
+
+
     /**
      * Sets the secret key
      * The key must be non-zero, and less than or equal to
      * 56 characters in length.
      *
      * @param string $key
-     * @return bool  Returns true on success, PEAR_Error on failure
+     * @return bool  Returns true on success, throws and Exception on failure
      * @access public
      */
     function setKey($key)
     {
         if (!is_string($key)) {
-            PEAR::raiseError('Key must be a string', 2, PEAR_ERROR_DIE);
+            throw Exception( 'Key must be a string' );
         }
 
         $len = strlen($key);
 
         if ($len > 56 || $len == 0) {
-            PEAR::raiseError('Key must be less than 56 characters and non-zero. Supplied key length: ' . $len, 3, PEAR_ERROR_DIE);
+            throw Exception( 'Key must be less than 56 characters and non-zero. Supplied key length: ' . $len );
         }
 
         if (extension_loaded('mcrypt')) {
@@ -268,12 +276,12 @@ class Crypt_Blowfish
 
         require_once 'Blowfish/DefaultKey.php';
         $this->_init();
-        
+
         $k = 0;
         $data = 0;
         $datal = 0;
         $datar = 0;
-        
+
         for ($i = 0; $i < 18; $i++) {
             $data = 0;
             for ($j = 4; $j > 0; $j--) {
@@ -282,7 +290,7 @@ class Crypt_Blowfish
             }
             $this->_P[$i] ^= $data;
         }
-        
+
         for ($i = 0; $i <= 16; $i += 2) {
             $this->_encipher($datal, $datar);
             $this->_P[$i] = $datal;
@@ -308,10 +316,10 @@ class Crypt_Blowfish
             $this->_S[3][$i] = $datal;
             $this->_S[3][$i+1] = $datar;
         }
-        
+
         return true;
     }
-    
+
 }
 
 ?>
